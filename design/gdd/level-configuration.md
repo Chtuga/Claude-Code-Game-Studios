@@ -88,6 +88,7 @@ extends Resource
 @export var level_number: int              # 1–5
 @export var timer_duration: float          # seconds
 @export var star_thresholds: Array[float]  # [1-star secs, 2-star secs, 3-star secs] — time remaining at goal completion
+@export var play_bounds: Rect2             # XZ playable area: position = min corner (x,z), size = width/depth
 @export var goals: Array[LevelGoal]
 ```
 
@@ -127,8 +128,8 @@ Level (Node3D)                          ← root, holds @export var config: Leve
 - Each goal object node must carry a metadata entry `object_id` matching its
   Object Configuration `id` (e.g. `"avocado"`) — Target System reads this to
   match eaten objects to goals
-- Filler objects do not need a group or metadata; the Eating System awards
-  points regardless
+- Filler objects do not need a group or metadata; `ConsumableObject.eat()` awards
+  points regardless via Growth System
 - `Objects` node must be a plain `Node3D` — no physics body — so scene hierarchy
   stays clean and the node can be used as a logical grouping without affecting physics
 
@@ -140,7 +141,7 @@ Level (Node3D)                          ← root, holds @export var config: Leve
 | Target System | Reads from this | At level start, queries `"goal_objects"` group to find all goal object nodes; reads `object_id` metadata per node to build goal counters from `LevelConfig.goals` |
 | Timer System | Reads from this | Reads `timer_duration` from `LevelConfig` to set the countdown at level start |
 | Camera System | Reads from this | Reads `CameraAnchor` node position/rotation to set initial camera framing |
-| Eating System | No direct dependency | Operates on any `RigidBody3D` — does not read `LevelConfig` directly; notifies Target System on eat via signal |
+| ConsumableObject | No direct dependency | Each object's `eat()` handles points and removal independently — does not read `LevelConfig` directly |
 | Star Rating System | Reads from this | Reads `star_thresholds` (seconds remaining) from `LevelConfig` at goal completion to compute star count |
 | World/Level Unlock System | Reads from this | Reads `levels_registry.tres` to determine level order and unlock progression |
 

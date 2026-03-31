@@ -87,7 +87,7 @@ concern.
 | System | Direction | Interface |
 |--------|-----------|-----------|
 | Level Configuration | Reads from | Reads `CameraAnchor` transform at level start for base position |
-| Growth System | Reads from | Receives `level_changed(new_level: int)` signal ⚠️ signal name provisional — validate when Growth System GDD is designed; looks up `level_height_multipliers[new_level - 1]` to set new target height |
+| Growth System | Reads from | Receives `hole_level_up(new_level: int)` signal; reads `HoleProgressionConfig.level_height_multipliers[new_level - 1]` to set new target height |
 | Level Flow System | Receives from | Resets camera to `anchor_height * level_height_multipliers[0]` on level restart |
 | Input System | Indirect coupling | `sensitivity` must be recalibrated when camera height changes significantly — no runtime dependency |
 
@@ -103,7 +103,7 @@ camera_y = lerpf(camera_y, target_height, 1.0 - exp(-zoom_speed * delta))
 | Variable | Type | Range | Description |
 |----------|------|-------|-------------|
 | `anchor_height` | float (m) | 6–15 m | Y position of `CameraAnchor` — base height at hole level 1 |
-| `level_height_multipliers` | Array[float] (10 values) | 1.0 – 3.0 | Per-hole-level scale factor; index 0 = level 1 |
+| `level_height_multipliers` | Array[float] (10 values) | 1.0 – 3.0 | Per-hole-level scale factor; index 0 = level 1. Stored in `HoleProgressionConfig` |
 | `hole_level` | int | 1–10 | Current hole level from Growth System |
 | `target_height` | float (m) | `anchor_height` – `anchor_height * max_multiplier` | Height the camera interpolates toward |
 | `zoom_speed` | float | 0.5–5.0 | Lerp speed; higher = snappier transition |
@@ -129,7 +129,7 @@ remains centred at max height, not level-1 height.
 | No `CameraAnchor` in scene | Warning logged; fallback to 10 m above world origin, 90° top-down | Development aid — wrong framing but no crash |
 | `level_height_multipliers` array has fewer than 10 entries | Camera System clamps index to last available value and logs a warning | Prevents out-of-bounds access on a misconfigured array |
 | Camera height overshoots diorama boundary (objects leave frustum at level 10) | Level designer's responsibility — tune `level_height_multipliers` and `anchor_height` together during playtest | Camera System has no awareness of scene boundaries |
-| `level_changed` fires multiple times in rapid succession | Each signal updates `target_height`; lerp smooths out the transition — no jarring jump | Lerp absorbs rapid level changes gracefully |
+| `hole_level_up` fires multiple times in rapid succession | Each signal updates `target_height`; lerp smooths out the transition — no jarring jump | Lerp absorbs rapid level changes gracefully |
 | Level restart mid-zoom (camera between heights) | Camera snaps to `anchor_height * multipliers[0]` instantly on restart — no lingering zoom state | Clean slate on restart |
 | Screen aspect ratio changes (browser window resize) | Godot adjusts perspective frustum automatically — no special case needed | Engine handles this natively |
 
@@ -138,7 +138,7 @@ remains centred at max height, not level-1 height.
 | System | Direction | Nature |
 |--------|-----------|--------|
 | Level Configuration | This depends on | Soft — reads `CameraAnchor` transform; has fallback if missing |
-| Growth System | This depends on | Hard — receives `level_changed` signal to update target height; without it camera stays at base height |
+| Growth System | This depends on | Hard — receives `hole_level_up` signal to update target height; without it camera stays at base height |
 | Level Flow System | This is depended on by (indirect) | Level restart signal triggers camera reset |
 
 ## Tuning Knobs
@@ -148,7 +148,7 @@ remains centred at max height, not level-1 height.
 | `fov` | 60° | 45°–75° | Barrel distortion at edges | Narrow view; level crops unless camera is very high |
 | `camera_pitch` | 75° from horizontal | 65°–85° | Near top-down; cascade depth hard to read | Too side-on; ground plane hard to navigate |
 | `anchor_height` (level 1) | 10 m | 6–15 m | Diorama looks tiny at level 1 | Parts of level outside frustum at level 1 |
-| `level_height_multipliers` | [1.0, 1.1, 1.2, 1.35, 1.5, 1.65, 1.8, 2.0, 2.2, 2.5] | Per-value: 1.0–3.0 | Level 10 camera so high objects become unreadable | Camera barely moves across levels; growth feels unacknowledged |
+| `level_height_multipliers` | [1.0, 1.1, 1.2, 1.35, 1.5, 1.65, 1.8, 2.0, 2.2, 2.5] | Per-value: 1.0–3.0 | Level 10 camera so high objects become unreadable | Camera barely moves across levels; growth feels unacknowledged. Stored in `HoleProgressionConfig` |
 | `zoom_speed` | 2.0 | 0.5–5.0 | Camera snaps; level-up feels jarring | Camera lags far behind; disorienting when eating fast |
 
 **Note:** `level_height_multipliers` should be tuned alongside the Growth System

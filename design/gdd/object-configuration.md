@@ -11,13 +11,17 @@ Object Configuration is the static data catalogue for all consumable objects in
 Hungry Void. It defines every object type the game can spawn: its bounding box
 dimensions, collision shape type, size category (used to assign growth point value
 tiers), and whether it is eligible to be a target. No object may appear in a level
-without a corresponding entry in this catalogue. This system has no runtime logic —
-it is a data resource read by the Object Spawner (to instantiate RigidBody3D nodes
-with correct shapes and mass), the Eating System (to award growth points on eat),
-and the Target System (to identify which objects can be marked as ★ targets). The
-eating size gate is a direct radius comparison handled by the Eating System — size
-categories are not used for gating. Object Configuration is the single source of
-truth for object dimensions and point tiers.
+without a corresponding entry in this catalogue.
+
+Each catalogue object scene must include a `ConsumableObject` script (see
+Consumable Object Contract below). When the hole's `Area3D` fires `body_entered`,
+the Hole Controller calls `eat()` on the object. The object is then responsible for
+emitting the `eaten` signal (carrying `object_id` and `points`), triggering any
+special effects, and calling `queue_free()` on itself.
+
+Object Configuration is the single source of truth for object dimensions and point
+tiers. Size categories are not used for the eating gate — they exist solely to assign
+point tiers.
 
 ## Player Fantasy
 
@@ -99,6 +103,7 @@ Every entry must define these fields:
 | `collision_shape` | enum | `box`, `sphere`, or `capsule` — per Physics Configuration Node Type Guide |
 | `size_category` | enum | `small`, `medium`, `large`, `huge` |
 | `can_be_target` | bool | Whether this object type is eligible to appear in a level goal |
+| `icon` | Texture2D | 2D icon used by HUD goal counters to represent this object type |
 
 **Derived values** (computed at runtime, not stored in the catalogue):
 
@@ -106,14 +111,41 @@ Every entry must define these fields:
 - `volume = width * height * depth` — used to compute mass via Physics Configuration formula
 - `points = [tier lookup from size_category]` — used by Eating System on eat event
 
+### Consumable Object Contract
+
+Every object scene must have a `ConsumableObject` base script attached to its root node:
+
+```gdscript
+class_name ConsumableObject
+extends RigidBody3D
+
+## Emitted when this object is eaten by the hole.
+signal eaten(object_id: String, points: int)
+
+@export var object_id: String   ## Must match catalogue id
+@export var points: int         ## Populated from catalogue at load time
+
+## Called by Hole Controller on body_entered.
+## Subclasses may override to add special effects before calling super.eat().
+func eat() -> void:
+    eaten.emit(object_id, points)
+    queue_free()
+```
+
+- `object_id` must match the catalogue entry `id` for Growth and Target Systems to react correctly
+- `points` must be set from the catalogue `size_category` → point tier at level load
+- Subclasses override `eat()` for special behaviours (spawn items, explode, etc.) — must still call `super.eat()` or manually emit `eaten` and call `queue_free()`
+- Objects that are not catalogue entries (environment, boundary) must NOT have `ConsumableObject` and must be on a different collision layer so the hole's `Area3D` never detects them
+
 ### Interactions with Other Systems
 
 | System | Direction | Interface |
 |--------|-----------|-----------|
-| Object Spawner | Reads from this (if it exists) | Objects are pre-placed in level scenes; Spawner (if implemented) applies physics setup only — reads `collision_shape` to validate `CollisionShape3D` type and `width/height/depth` to compute `volume` for mass assignment |
-| Eating System | Reads from this | Reads `size_category` → point tier on `body_entered`; reads `bounding_sphere_radius` (derived) for size gate comparison against hole radius |
-| Target System | Reads from this | Reads `can_be_target` to validate that a level's designated targets are eligible object types |
-| Level Configuration | Reads from this | References objects by `id` when authoring which objects appear in a level and at what positions |
+| Hole Controller | This is called by | On `body_entered`, Hole Controller calls `eat()` on this object (duck-typed) |
+| Growth System | This is depended on by | Subscribes to `ConsumableObject.eaten` signal for point accumulation |
+| Target System | This is depended on by | Subscribes to `ConsumableObject.eaten` signal for goal progress; reads `can_be_target` to validate level target assignments |
+| HUD System | This is depended on by | Reads `icon` field by `object_id` to display per-type goal counter icons |
+| Level Configuration | Reads from this | References objects by `id` when authoring which objects appear in a level |
 | Physics Configuration | No runtime dependency | Defines the `collision_shape` enum values and the mass formula that consumes `volume` — Object Configuration respects those contracts but does not call into Physics Configuration at runtime |
 
 ## Formulas
@@ -127,7 +159,7 @@ bounding_sphere_radius = sqrt(width² + height² + depth²) / 2
 | Variable | Type | Source | Description |
 |----------|------|--------|-------------|
 | `width`, `height`, `depth` | float (m) | Object catalogue | Bounding box dimensions |
-| `bounding_sphere_radius` | float (m) | Derived | Compared against hole `SphereShape3D` radius by Eating System for size gate |
+| `bounding_sphere_radius` | float (m) | Derived | Reference value for level designers when sizing holes and level layouts |
 
 ⚠️ **Provisional:** Expected output range 0.04 – 1.56 m depends on validated size
 category radius ranges.
@@ -157,15 +189,16 @@ System's 10-level threshold curve (not yet designed).
 | Object dimensions result in `bounding_sphere_radius` that crosses a category boundary | Assign to smaller category per the boundary rule in Size Categories. Flag in level review if the mismatch is large (>20%) | Avoids objects being gated longer than their visual size suggests |
 | Two catalogue entries with the same `id` | Treated as a configuration error — last entry wins with a warning logged. `id` must be unique | Duplicate IDs would cause unpredictable point values or wrong scenes loading |
 | Object with zero or negative dimension | Invalid entry — catalogue validation must reject it at load time | Zero volume produces zero mass; negative dimensions are physically meaningless |
-| Object node in level scene has `object_id` metadata that doesn't match any catalogue `id` | Eating System logs a warning and awards 0 points; Target System logs an error if it's in the `"goal_objects"` group | Catches authoring mismatches between placed objects and catalogue entries |
+| Object node in level scene has `object_id` that doesn't match any catalogue `id` | `ConsumableObject.eat()` emits `eaten` with 0 points and logs a warning; Target System logs an error if the object is in the `"goal_objects"` group | Catches authoring mismatches between placed objects and catalogue entries |
 
 ## Dependencies
 
 | System | Direction | Nature |
 |--------|-----------|--------|
-| Object Spawner | This is depended on by (if it exists) | Soft — objects are pre-placed; Spawner reads `collision_shape` and dimensions for physics setup only. Object Spawner system is not confirmed for MVP |
-| Eating System | This is depended on by | Hard — cannot award points without the point tier lookup; cannot perform size gate without `bounding_sphere_radius` |
-| Target System | This is depended on by | Hard — relies on `can_be_target` flag to validate level target assignments |
+| Hole Controller | This is depended on by | Hard — calls `eat()` on `ConsumableObject` on `body_entered`; objects must implement this method |
+| Growth System | This is depended on by | Hard — subscribes to `ConsumableObject.eaten` for points; relies on correct `points` value set at load |
+| Target System | This is depended on by | Hard — subscribes to `ConsumableObject.eaten` for goal progress; relies on `can_be_target` flag and `object_id` metadata |
+| HUD System | This is depended on by | Hard — reads `icon` field by `object_id` for goal counter display |
 | Level Configuration | This is depended on by | Hard — level data references objects by `id`; catalogue must exist before any level can be authored |
 | Physics Configuration | This depends on (soft) | Defines the `collision_shape` enum values (box/sphere/capsule) and mass formula that consumes `volume` — Object Configuration must respect these contracts |
 | *(none)* | Foundation system | No other upstream dependencies beyond Physics Configuration |
@@ -190,16 +223,16 @@ become noise.
 - [ ] Every object in a level has a corresponding entry in the Object Configuration catalogue with all required fields populated
 - [ ] `id` values are unique across the entire catalogue — duplicate IDs are rejected at load time with an error
 - [ ] Objects with zero or negative dimensions are rejected at load time
-- [ ] `bounding_sphere_radius` is correctly derived from catalogue dimensions — exact eating gate behaviour (which hole level can eat which size category) is validated in the Eating System GDD once hole radius growth curve is defined
-- [ ] Eating a small object awards exactly 10 points; medium 40; large 120; huge 350
+- [ ] `bounding_sphere_radius` is correctly derived from catalogue dimensions
+- [ ] Eating a small object awards exactly 10 points (via `ConsumableObject.eaten` signal); medium 40; large 120; huge 350
 - [ ] An object with `can_be_target: false` cannot be designated as a target in Level Configuration — validation catches it before the level loads
-- [ ] Object Spawner correctly selects `BoxShape3D`, `SphereShape3D`, or `CapsuleShape3D` based on `collision_shape` field
-- [ ] Deleting a scene file and loading a level that references its UID logs a warning and skips the object — no crash
+- [ ] Each catalogue object scene root node has a `ConsumableObject` script; calling `eat()` emits `eaten(object_id, points)` and calls `queue_free()`
+- [ ] Environment and boundary objects are NOT on collision layer 2 — the hole's `Area3D` does not detect them
 
 ## Open Questions
 
 | Question | Owner | Resolution |
 |----------|-------|------------|
 | What are the correct size category radius ranges in metres? 0.05–1.80 m is theoretical — requires first object art pass and in-engine playtesting | Gameplay programmer + level designer | Resolve during first physics spike with real object scenes |
-| Should point tier values be stored in Object Configuration or in Growth System? Currently split: tiers defined here, thresholds defined in Growth System. Confirm this split is intentional once Growth System GDD is written | Systems designer | Resolve when Growth System GDD is designed |
+| Should point tier values be stored in Object Configuration or in Growth System? Currently split: tiers defined here, thresholds defined in Growth System (`HoleProgressionConfig`). | Systems designer | ✅ Resolved: split is intentional — per-object point value lives here, per-level growth thresholds live in `HoleProgressionConfig` owned by Growth System |
 | Does any object type need per-instance variation (e.g. small/large variant of the same mesh)? If so, catalogue needs versioned entries (`coffee-mug-sm`, `coffee-mug-lg`) vs. a single entry with a size parameter | Level designer | Resolve during first level art pass |
