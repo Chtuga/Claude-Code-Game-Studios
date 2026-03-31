@@ -121,12 +121,12 @@ that target car." Eat efficiently, hit targets, beat the clock. Star rating
 revealed at end — 1/2/3 stars based on time remaining. Next level unlocks.
 
 ### Session-Level (15–30 minutes)
-Complete a World (5–8 levels). Each world has a theme (Kitchen, City Block,
+Complete a World (5 levels). Each world has a theme (Kitchen, City Block,
 Office, Forest). Beat the world → new world unlocks. Session ends naturally
 at world completion or at a self-imposed stopping point.
 
 ### Long-Term Progression
-- 3 Worlds × 6 levels = 18 levels total
+- 2 Worlds × 5 levels = 10 levels total
 - Star collection unlocks bonus levels and cosmetic hole skins
 - "3-star every level in World 1" completionist goal
 - Optional leaderboard entry per level for replay motivation
@@ -235,7 +235,7 @@ The game is free to play with no hard paywalls. Revenue comes from three sources
 | ---- | ---- | ---- | ---- |
 | **Remove Ads** | One-time | Low ($1.99–$2.99) | Permanently removes all interstitial and banner ads |
 | **Hole Skin Pack** | Cosmetic | Low ($0.99–$1.99) | Alternate hole visual themes (galaxy, fire, etc.) |
-| **World Pack** | Content | Mid ($2.99–$4.99) | Extra worlds beyond the 3 base worlds |
+| **World Pack** | Content | Mid ($2.99–$4.99) | Extra worlds beyond the 2 base worlds |
 | **Starter Bundle** | Bundle | Low ($2.99) | Remove Ads + 1 Skin Pack at a discount |
 
 ### Monetization Anti-patterns (Do Not Do)
@@ -256,7 +256,7 @@ The game is free to play with no hard paywalls. Revenue comes from three sources
 | **Art Pipeline Complexity** | Medium — custom low-poly 3D diorama assets per world; reuse + rescale objects across levels |
 | **Audio Needs** | Moderate — satisfying per-object eat SFX, level-up chime, ambient world music per theme |
 | **Networking** | None (optional: REST-based leaderboard only) |
-| **Content Volume** | 3 worlds × 6 levels = 18 levels; ~15 unique object types per world; 10 hole size levels |
+| **Content Volume** | 2 worlds × 5 levels = 10 levels; ~15 unique object types per world; 10 hole size levels |
 | **Procedural Systems** | None — all levels hand-crafted for quality control |
 
 ---
@@ -312,9 +312,9 @@ star rating.
 | Tier | Content | Features | Timeline |
 | ---- | ---- | ---- | ---- |
 | **MVP** | 1 world, 3 levels | Core loop, growth system, timer, stars | 1–2 weeks |
-| **Vertical Slice** | 1 polished world, 6 levels | Full juice, audio, UI polish | 3–4 weeks |
-| **Alpha** | 2 worlds, 12 levels | All features, rough art | 5–6 weeks |
-| **Full Vision** | 3 worlds, 18 levels + bonus | All features, polished, leaderboards | 7–8 weeks |
+| **Vertical Slice** | 1 polished world, 5 levels | Full juice, audio, UI polish | 3–4 weeks |
+| **Alpha** | 2 worlds, 10 levels | All features, rough art | 5–6 weeks |
+| **Full Vision** | 2 worlds, 10 levels + bonus content | All features, polished, leaderboards | 7–8 weeks |
 
 ---
 

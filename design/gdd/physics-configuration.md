@@ -92,7 +92,7 @@ This is a hard performance constraint for WebGL with 50–100 active bodies.**
 | Floor / flat surface | `StaticBody3D` + `BoxShape3D` | Flat box | Tables, floors, shelves |
 | Curved/irregular environment | `StaticBody3D` + `ConcavePolygonShape3D` | Mesh-accurate | Level geometry only — permitted on StaticBody3D since it never moves |
 | Level boundary | `Area3D` + `BoxShape3D` | Box surrounding playfield | Catches consumables that fall off level |
-| Target object (★) | Same as consumable | Same primitive as its size category | Target status is a metadata flag, not a physics distinction |
+| Goal object | Same as consumable | Same primitive as its size category | Goal status is a Godot group + `object_id` metadata flag, not a physics distinction |
 
 **Compound shapes:** when a mesh genuinely requires two collision volumes
 (e.g., an L-shaped sofa), use two primitive `CollisionShape3D` children on one
@@ -180,6 +180,7 @@ validate. The density_multiplier range especially needs hands-on tuning.
 | Eating System | This is depended on by | Hard — relies on the guarantee that only `consumable` bodies trigger `body_entered` |
 | Level Configuration | This is depended on by | Hard — level designers assign `environment` and `boundary` layers per this spec |
 | Growth System | This is depended on by | Soft — updates `SphereShape3D.radius`; the shape contract is defined here |
+| Object Configuration | This is depended on by (soft) | Consumes the `collision_shape` enum values (box/sphere/capsule) defined in the Node Type Guide |
 | *(none)* | This depends on | Foundation system — no upstream dependencies |
 
 ## Tuning Knobs

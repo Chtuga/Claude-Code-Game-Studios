@@ -83,34 +83,34 @@ Object Configuration defines the **data schema** every object entry must conform
 The catalogue is populated world-by-world as level art is created — specific objects
 are added during Level Configuration design, not here.
 
-Every entry in the Object Configuration catalogue must define these fields:
+**Catalogue format:** each object type is a separate `.tres` Godot Resource file
+(`class_name ObjectData extends Resource`). A central catalogue Resource holds an
+array of all entries. Objects are pre-placed in level `.tscn` files by designers —
+there is no runtime spawning from this catalogue.
+
+Every entry must define these fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `id` | string (kebab-case) | Human-readable unique identifier used in level data, logs, and design docs (e.g. `coffee-mug`, `park-bench`) |
-| `scene_uid` | Godot UID | UID of the object's `.tscn` scene file (`uid://...`). Used at runtime for `load()` calls. Rename-safe — Godot tracks this automatically |
+| `id` | string (kebab-case) | Unique identifier used in level data, logs, and design docs (e.g. `coffee-mug`, `park-bench`). Must match the `object_id` metadata on the corresponding scene node |
 | `width` | float (m) | Bounding box X axis |
 | `height` | float (m) | Bounding box Y axis |
 | `depth` | float (m) | Bounding box Z axis |
 | `collision_shape` | enum | `box`, `sphere`, or `capsule` — per Physics Configuration Node Type Guide |
 | `size_category` | enum | `small`, `medium`, `large`, `huge` |
-| `can_be_target` | bool | Whether this object type is eligible to be a ★ target in a level |
+| `can_be_target` | bool | Whether this object type is eligible to appear in a level goal |
 
 **Derived values** (computed at runtime, not stored in the catalogue):
 
 - `bounding_sphere_radius = sqrt(width² + height² + depth²) / 2` — used by Eating System for size gate
-- `volume = width * height * depth` — used by Object Spawner to compute mass via Physics Configuration formula
+- `volume = width * height * depth` — used to compute mass via Physics Configuration formula
 - `points = [tier lookup from size_category]` — used by Eating System on eat event
-
-**Authoring rule:** `id` is the key used everywhere humans write data (level configs,
-design docs). `scene_uid` is the key used everywhere the engine loads assets. The
-catalogue is the mapping between them.
 
 ### Interactions with Other Systems
 
 | System | Direction | Interface |
 |--------|-----------|-----------|
-| Object Spawner | Reads from this | Looks up `scene_uid` to instantiate the scene, reads `collision_shape` to configure the `CollisionShape3D`, reads `width/height/depth` to compute `volume` for mass assignment |
+| Object Spawner | Reads from this (if it exists) | Objects are pre-placed in level scenes; Spawner (if implemented) applies physics setup only — reads `collision_shape` to validate `CollisionShape3D` type and `width/height/depth` to compute `volume` for mass assignment |
 | Eating System | Reads from this | Reads `size_category` → point tier on `body_entered`; reads `bounding_sphere_radius` (derived) for size gate comparison against hole radius |
 | Target System | Reads from this | Reads `can_be_target` to validate that a level's designated targets are eligible object types |
 | Level Configuration | Reads from this | References objects by `id` when authoring which objects appear in a level and at what positions |
@@ -157,13 +157,13 @@ System's 10-level threshold curve (not yet designed).
 | Object dimensions result in `bounding_sphere_radius` that crosses a category boundary | Assign to smaller category per the boundary rule in Size Categories. Flag in level review if the mismatch is large (>20%) | Avoids objects being gated longer than their visual size suggests |
 | Two catalogue entries with the same `id` | Treated as a configuration error — last entry wins with a warning logged. `id` must be unique | Duplicate IDs would cause unpredictable point values or wrong scenes loading |
 | Object with zero or negative dimension | Invalid entry — catalogue validation must reject it at load time | Zero volume produces zero mass; negative dimensions are physically meaningless |
-| Level references a `scene_uid` that no longer exists (file deleted) | Godot logs a load error; Object Spawner skips the object and logs a warning | UID tracking handles renames, but deletions must be caught manually during level QA |
+| Object node in level scene has `object_id` metadata that doesn't match any catalogue `id` | Eating System logs a warning and awards 0 points; Target System logs an error if it's in the `"goal_objects"` group | Catches authoring mismatches between placed objects and catalogue entries |
 
 ## Dependencies
 
 | System | Direction | Nature |
 |--------|-----------|--------|
-| Object Spawner | This is depended on by | Hard — cannot instantiate objects without `scene_uid`, `collision_shape`, and dimensions |
+| Object Spawner | This is depended on by (if it exists) | Soft — objects are pre-placed; Spawner reads `collision_shape` and dimensions for physics setup only. Object Spawner system is not confirmed for MVP |
 | Eating System | This is depended on by | Hard — cannot award points without the point tier lookup; cannot perform size gate without `bounding_sphere_radius` |
 | Target System | This is depended on by | Hard — relies on `can_be_target` flag to validate level target assignments |
 | Level Configuration | This is depended on by | Hard — level data references objects by `id`; catalogue must exist before any level can be authored |
@@ -190,7 +190,7 @@ become noise.
 - [ ] Every object in a level has a corresponding entry in the Object Configuration catalogue with all required fields populated
 - [ ] `id` values are unique across the entire catalogue — duplicate IDs are rejected at load time with an error
 - [ ] Objects with zero or negative dimensions are rejected at load time
-- [ ] `bounding_sphere_radius` derived from catalogue dimensions correctly gates eating: a level-1 hole (radius ~0.3 m) cannot eat a medium object (bounding sphere >0.15 m)
+- [ ] `bounding_sphere_radius` is correctly derived from catalogue dimensions — exact eating gate behaviour (which hole level can eat which size category) is validated in the Eating System GDD once hole radius growth curve is defined
 - [ ] Eating a small object awards exactly 10 points; medium 40; large 120; huge 350
 - [ ] An object with `can_be_target: false` cannot be designated as a target in Level Configuration — validation catches it before the level loads
 - [ ] Object Spawner correctly selects `BoxShape3D`, `SphereShape3D`, or `CapsuleShape3D` based on `collision_shape` field

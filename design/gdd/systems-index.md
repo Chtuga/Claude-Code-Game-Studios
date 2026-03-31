@@ -28,12 +28,12 @@ loop and is designed last.
 |---|-------------|----------|----------|--------|------------|------------|
 | 1 | Physics Configuration | Core | MVP | Designed | [physics-configuration.md](physics-configuration.md) | — |
 | 2 | Object Configuration | Core | MVP | Designed | [object-configuration.md](object-configuration.md) | — |
-| 3 | Level Configuration | Core | MVP | Not Started | — | — |
-| 4 | Input System | Core | MVP | Not Started | — | — |
-| 5 | Timer System | Core | MVP | Not Started | — | — |
-| 6 | Camera System | Core | MVP | Not Started | — | Level Configuration |
+| 3 | Level Configuration | Core | MVP | Designed | [level-configuration.md](level-configuration.md) | Object Configuration |
+| 4 | Input System | Core | MVP | Designed | [input-system.md](input-system.md) | — |
+| 5 | Timer System | Core | MVP | Designed | [timer-system.md](timer-system.md) | Level Configuration |
+| 6 | Camera System | Core | MVP | Designed | [camera-system.md](camera-system.md) | Level Configuration, Growth System |
 | 7 | Hole Controller | Gameplay | MVP | Not Started | — | Input System, Physics Configuration |
-| 8 | Object Spawner | Gameplay | MVP | Not Started | — | Level Configuration, Object Configuration, Physics Configuration |
+| 8 | Object Spawner | Gameplay | MVP | Not Started | — | Level Configuration, Object Configuration, Physics Configuration | - needs revision, probably not needed
 | 9 | Eating System | Gameplay | MVP | Not Started | — | Hole Controller, Object Spawner, Physics Configuration |
 | 10 | Growth System | Gameplay | MVP | Not Started | — | Eating System |
 | 11 | Target System | Gameplay | MVP | Not Started | — | Eating System, Level Configuration |
@@ -179,7 +179,7 @@ None detected.
 | Metric | Count |
 |--------|-------|
 | Total systems identified | 24 |
-| Design docs started | 2 |
+| Design docs started | 6 |
 | Design docs reviewed | 0 |
 | Design docs approved | 0 |
 | MVP systems designed | 0 / 15 |
