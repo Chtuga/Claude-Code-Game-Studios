@@ -128,8 +128,13 @@ Level (Node3D)                          ← root, holds @export var config: Leve
 - Each goal object node must carry a metadata entry `object_id` matching its
   Object Configuration `id` (e.g. `"avocado"`) — Target System reads this to
   match eaten objects to goals
-- Filler objects do not need a group or metadata; `ConsumableObject.eat()` awards
-  points regardless via Growth System
+- ALL consumable `RigidBody3D` objects (both filler and goal) must be added to
+  the Godot group `"consumables"` in the editor — Growth System uses this group
+  to connect to each object's `eaten` signal at level load. This group is distinct
+  from `"goal_objects"`: every consumable is in `"consumables"`, but only goal
+  objects are also in `"goal_objects"`
+- Filler objects do not need `"goal_objects"` membership or `object_id` metadata;
+  `ConsumableObject.eat()` awards points via Growth System regardless
 - `Objects` node must be a plain `Node3D` — no physics body — so scene hierarchy
   stays clean and the node can be used as a logical grouping without affecting physics
 

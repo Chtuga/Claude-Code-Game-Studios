@@ -120,7 +120,7 @@ the hole retains meaningful movement range at all sizes.
 | Input System | Reads from | Subscribes to `movement_delta(delta: Vector2)` signal; applies per-event |
 | Growth System | Reads from | Subscribes to `hole_level_up(new_level: int)`; updates `SphereShape3D.radius` and `HoleMesh.scale` |
 | Level Configuration | Reads from | Reads `HoleSpawn` position at level start; reads `play_bounds` for boundary clamping |
-| ConsumableObject | Calls into | On `body_entered`, calls `body.eat()` (duck-typed); the object handles points, effects, and `queue_free()` |
+| ConsumableObject | Calls into | On `body_entered`, calls `body.eat()` (duck-typed); the object handles points, effects, and `queue_free()`. See Object Configuration GDD (Consumable Object Contract) for the full `eat()` / `eaten` signal specification |
 | Camera System | This is depended on by (indirect) | Camera System receives `hole_level_up` from Growth System — not from Hole Controller directly |
 | HUD System | This is depended on by | Reads `sphere_radius` and `global_position` for any HUD elements displaying hole state |
 | Level Flow System | Reads from | Enables/disables Hole Controller movement on level start/complete/fail |

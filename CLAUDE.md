@@ -5,14 +5,18 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Engine**: Godot 4.6.2 (installed at `~/Desktop/Godot_v4.6.2`)
+- **Language**: GDScript (primary); GDExtension for performance-critical native code if needed
+- **Rendering**: Forward+ (3D, WebGL export)
+- **Physics**: Godot Jolt (default in 4.6)
+- **Export Target**: HTML5/WebGL (primary); desktop as dev convenience build
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
+- **Build System**: Godot export presets (HTML5 + desktop)
+- **Asset Pipeline**: Godot native import system; .tres Resources for data
 
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> **Note**: Use `godot-specialist` and `godot-gdscript-specialist` agents.
+> Godot 4.4–4.6 introduced significant changes beyond LLM training cutoff —
+> always cross-reference `docs/engine-reference/godot/` before suggesting APIs.
 
 ## Project Structure
 

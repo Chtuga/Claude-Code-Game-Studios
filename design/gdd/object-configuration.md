@@ -43,8 +43,9 @@ They must be validated in-engine during the first object art pass and adjusted t
 match actual diorama scale and hole growth curve.
 
 The bounding sphere radius is derived from each object's bounding box:
-`r = sqrt(w² + h² + d²) / 2`. This is the value the Eating System compares
-against the hole's `SphereShape3D` radius for the size gate.
+`r = sqrt(w² + h² + d²) / 2`. This is a reference value for level designers —
+the actual size gate is handled by the Hole Controller / ConsumableObject eat
+contract (see Object Configuration, Consumable Object Contract).
 
 | Category | Bounding Sphere Radius | Accessible at Hole Level | Example Objects |
 |----------|----------------------|--------------------------|-----------------|
@@ -54,7 +55,8 @@ against the hole's `SphereShape3D` radius for the size gate.
 | Huge | 0.91 – 1.80 m | ~9 | Cars, trees, dumpsters |
 
 **Rule:** when an object's bounding sphere radius falls near a category boundary,
-assign it to the smaller category. This ensures the Eating System's size gate errs
+assign it to the smaller category. This ensures the size gate (enforced by the
+Hole Controller's `SphereShape3D` radius vs. the object's bounding sphere) errs
 toward "edible sooner" rather than "gated longer," which matches the Grow Don't
 Grind pillar.
 
@@ -107,9 +109,9 @@ Every entry must define these fields:
 
 **Derived values** (computed at runtime, not stored in the catalogue):
 
-- `bounding_sphere_radius = sqrt(width² + height² + depth²) / 2` — used by Eating System for size gate
+- `bounding_sphere_radius = sqrt(width² + height² + depth²) / 2` — reference value for designers; actual size gate is the Hole Controller's `SphereShape3D.radius` vs. the object's collision shape
 - `volume = width * height * depth` — used to compute mass via Physics Configuration formula
-- `points = [tier lookup from size_category]` — used by Eating System on eat event
+- `points = [tier lookup from size_category]` — emitted by `ConsumableObject.eaten` signal on eat event
 
 ### Consumable Object Contract
 

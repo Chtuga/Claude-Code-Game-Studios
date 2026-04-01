@@ -38,7 +38,8 @@ edible objects nearby to keep the bar moving).
 
 1. At level start: `accumulated_points = 0`, `hole_level = 1`
 2. At level load the Growth System connects to `eaten(object_id, points)` on every
-   node in the `"consumables"` group
+   node in the `"consumables"` group (see Level Configuration GDD, Scene Hierarchy
+   section — all consumable `RigidBody3D` objects must be in this group)
 3. On each `eaten` signal: `accumulated_points += points`
 4. After each addition, process level-ups in a loop:
    ```

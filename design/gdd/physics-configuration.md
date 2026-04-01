@@ -14,8 +14,9 @@ physics engine settings (gravity, tick rate, sleep thresholds), and the rules
 for configuring new nodes added by future systems. No physics body or area in
 the game should be placed in a scene without referencing this document. This
 system has no player-facing behavior — it is pure infrastructure that enables
-the Eating System's collision detection, the Object Spawner's RigidBody3D setup,
-and the Hole Controller's Area3D monitoring to work correctly together.
+the Hole Controller's `body_entered` collision detection, the ConsumableObject
+RigidBody3D setup, and the Hole Controller's Area3D monitoring to work correctly
+together.
 
 ## Player Fantasy
 
@@ -127,7 +128,7 @@ breaking the cascade collapse fantasy.
 |--------|-----------|-----------|
 | Hole Controller | Reads from this | Uses layer `hole` (1) for its `Area3D.collision_layer`. Sets `Area3D.collision_mask` to `consumable` (2). `SphereShape3D` radius is owned by Growth System — Physics Configuration defines the shape type only |
 | Object Spawner | Reads from this | Assigns layer `consumable` (2) and mask `consumable + environment` (2+3) to every `RigidBody3D` it instantiates. Shape type selected per Node Type Guide above |
-| Eating System | Reads from this | Connects to `body_entered` on the Hole's `Area3D`. This config guarantees only `consumable` bodies trigger the signal — Eating System does not re-check the layer |
+| Hole Controller | Reads from this (also) | `body_entered` on the Hole's `Area3D` is connected by the Hole Controller. This config guarantees only `consumable` bodies trigger the signal — Hole Controller does not re-check the layer |
 | Level Configuration | Reads from this | Level designers assign layer `environment` (3) to all `StaticBody3D` scene nodes. Boundary `Area3D` uses layer `boundary` (4), mask `consumable` (2) |
 | Growth System | Writes to Hole Controller | On level-up, Growth System updates `SphereShape3D.radius` on the Hole's `Area3D`. Physics Configuration defines the shape contract; Growth System owns the radius value |
 
@@ -168,7 +169,7 @@ validate. The density_multiplier range especially needs hands-on tuning.
 | Two objects enter hole in the same frame | Both `body_entered` signals fire independently and are processed in sequence. Order is Jolt's internal step order; no conflict | Godot 4 signal queue handles multiple entries per frame correctly |
 | Object falls off the level | Boundary `Area3D` detects it; object is freed. If it was a target, Level Flow System is notified — see Open Questions for resolution | Target loss is an edge case requiring explicit policy |
 | Object sleeps mid-topple | Cannot happen if sleep thresholds are set per Physics Engine Settings. If observed in testing, reduce `Sleep Velocity Threshold` further | Premature sleep is the primary physics feel failure mode |
-| Hole at max size (level 10) | `SphereShape3D` radius at maximum design value. No physics rule changes — size gating is handled by Eating System, not physics layers | No special physics case at max size |
+| Hole at max size (level 10) | `SphereShape3D` radius at maximum design value. No physics rule changes — size gating is handled by the ConsumableObject/Hole Controller eat contract, not physics layers | No special physics case at max size |
 | 50+ active rigid bodies simultaneously | If 60 fps budget is exceeded in WebGL, Object Spawner converts already-eaten objects to `StaticBody3D` before freeing, reducing active body count | Performance fallback — threshold value is a tuning knob |
 
 ## Dependencies
@@ -177,7 +178,7 @@ validate. The density_multiplier range especially needs hands-on tuning.
 |--------|-----------|--------|
 | Hole Controller | This is depended on by | Hard — cannot define `Area3D` layer/mask without this document |
 | Object Spawner | This is depended on by | Hard — assigns layer/mask to every `RigidBody3D` it creates; values come from here |
-| Eating System | This is depended on by | Hard — relies on the guarantee that only `consumable` bodies trigger `body_entered` |
+| Hole Controller | This is depended on by (also) | Hard — relies on the guarantee that only `consumable` bodies trigger `body_entered` on the hole's `Area3D` |
 | Level Configuration | This is depended on by | Hard — level designers assign `environment` and `boundary` layers per this spec |
 | Growth System | This is depended on by | Soft — updates `SphereShape3D.radius`; the shape contract is defined here |
 | Object Configuration | This is depended on by (soft) | Consumes the `collision_shape` enum values (box/sphere/capsule) defined in the Node Type Guide |
