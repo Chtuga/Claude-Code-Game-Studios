@@ -14,6 +14,9 @@ extends Node
 ## Subscribers: HoleController, CameraSystem, VFX System, HUD System.
 signal hole_level_up(new_level: int)
 
+## Emitted after every eat with updated point totals. HUD points bar listens to this.
+signal points_changed(accumulated: int, hole_level: int)
+
 # ---------------------------------------------------------------------------
 # Public readable state
 # ---------------------------------------------------------------------------
@@ -66,6 +69,7 @@ func _on_eaten(object_id: String, points: int) -> void:
 
 	accumulated_points += points
 	_process_level_ups()
+	points_changed.emit(accumulated_points, hole_level)
 
 
 func _process_level_ups() -> void:

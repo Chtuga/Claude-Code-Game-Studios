@@ -14,6 +14,10 @@ extends Node
 ## LevelFlowSystem listens to this to trigger the win sequence.
 signal all_goals_complete
 
+## Emitted after each goal object is eaten with the updated counters snapshot.
+## HUD listens to this to refresh the goal display.
+signal goal_count_changed(counters: Dictionary)
+
 # ---------------------------------------------------------------------------
 # Public readable state
 # ---------------------------------------------------------------------------
@@ -66,6 +70,7 @@ func _on_goal_eaten(object_id: String, _points: int) -> void:
 		return
 
 	goal_counters[object_id] = maxi(goal_counters[object_id] - 1, 0)
+	goal_count_changed.emit(goal_counters)
 
 	_check_win_condition()
 

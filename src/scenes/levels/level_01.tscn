@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://d4garv8iontx4" path="res://scenes/hole/Hole.tscn" id="2_i2aat"]
 [ext_resource type="Resource" uid="uid://skqhcko8pxxp" path="res://resources/levels/level_01_config.tres" id="3_uvc87"]
 [ext_resource type="PackedScene" uid="uid://b3fqmgd1makxu" path="res://scenes/objects/banana.tscn" id="5_qdh5e"]
+[ext_resource type="PackedScene" uid="uid://bqt5sdyojrhrq" path="res://scenes/hud/HUD.tscn" id="6_50wog"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_uvc87"]
 
@@ -33,6 +34,8 @@ ambient_light_energy = 3.14
 [node name="Level01" type="Node3D" unique_id=2036887384]
 script = ExtResource("1_50wog")
 config = ExtResource("3_uvc87")
+
+[node name="HUD" parent="." unique_id=132983320 instance=ExtResource("6_50wog")]
 
 [node name="Systems" parent="." unique_id=1082229489 instance=ExtResource("1_m802k")]
 
