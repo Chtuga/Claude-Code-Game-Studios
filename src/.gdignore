@@ -1,0 +1,2 @@
+# Godot will not import anything matched here.
+# Keeps design docs, prototypes, and CI tools out of the asset pipeline.

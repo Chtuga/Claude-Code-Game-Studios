@@ -5,7 +5,7 @@ Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: Godot 4.6.2 (installed at `~/Desktop/Godot_v4.6.2`)
+- **Engine**: Godot 4.6.2 (installed at `~/Desktop/Godot_v4.6.2`; project root at `src/`)
 - **Language**: GDScript (primary); GDExtension for performance-critical native code if needed
 - **Rendering**: Forward+ (3D, WebGL export)
 - **Physics**: Godot Jolt (default in 4.6)

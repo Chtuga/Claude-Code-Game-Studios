@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="LevelConfig" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/level_config.gd" id="1_config"]
+[ext_resource type="Resource" path="res://resources/progression/hole_progression_default.tres" id="2_progression"]
+
+[resource]
+script = ExtResource("1_config")
+time_limit = 90.0
+star_thresholds = [1.0, 30.0, 60.0]
+play_bounds = Rect2(-10, -10, 20, 20)
+progression_config = ExtResource("2_progression")

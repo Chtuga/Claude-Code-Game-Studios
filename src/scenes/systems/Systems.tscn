@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://o2dva5e0tffy"]
+
+[ext_resource type="Script" uid="uid://djp3l5f6ut4hg" path="res://scripts/gameplay/level_flow_system.gd" id="1_qchxs"]
+[ext_resource type="Script" uid="uid://74tv7ptfdajk" path="res://scripts/gameplay/growth_system.gd" id="2_eahhv"]
+[ext_resource type="Script" uid="uid://crt7u35amsyw0" path="res://scripts/gameplay/target_system.gd" id="3_5aida"]
+[ext_resource type="Script" uid="uid://b0306jlhvq8on" path="res://scripts/gameplay/timer_system.gd" id="4_xefja"]
+
+[node name="Systems" type="Node3D" unique_id=1082229489]
+
+[node name="LevelFlowSystem" type="Node" parent="." unique_id=135940614]
+script = ExtResource("1_qchxs")
+
+[node name="GrowthSystem" type="Node" parent="." unique_id=2048792961]
+script = ExtResource("2_eahhv")
+
+[node name="TargetSystem" type="Node" parent="." unique_id=1507619135]
+script = ExtResource("3_5aida")
+
+[node name="TimerSystem" type="Node" parent="." unique_id=367910779]
+script = ExtResource("4_xefja")

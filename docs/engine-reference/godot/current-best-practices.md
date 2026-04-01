@@ -26,6 +26,32 @@ This supplements (not replaces) the agent's built-in knowledge.
 
 - **Script backtracing**: Detailed call stacks available even in Release builds
 
+## Collision Shape Fundamentals (all versions)
+
+- **`SphereShape3D`, `BoxShape3D`, `CapsuleShape3D` are Resources, not nodes**
+  — they are never direct children in the scene tree. The node is always
+  `CollisionShape3D` (or `CollisionPolygon3D`), with the shape assigned to its
+  `shape` property.
+
+  ✅ Correct scene tree:
+  ```
+  Area3D
+  └── CollisionShape3D    ← node
+        shape = SphereShape3D  ← resource assigned in Inspector
+  ```
+
+  ❌ Wrong (will not work):
+  ```
+  Area3D
+  └── SphereShape3D   ← this node type does not exist
+  ```
+
+  To resize a sphere at runtime:
+  ```gdscript
+  var sphere := $Area3D/CollisionShape3D.shape as SphereShape3D
+  sphere.radius = new_radius
+  ```
+
 ## Physics (4.6)
 
 - **Jolt Physics is the default 3D engine** for new projects

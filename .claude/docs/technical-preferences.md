@@ -37,6 +37,12 @@
 - **Minimum Coverage**: All gameplay formula functions (Growth System thresholds, star rating, timer display, points bar fill)
 - **Required Tests**: Balance formulas, ConsumableObject eat() contract, signal emission correctness, Growth System level-up loop, Target System goal counter logic
 
+## Scene Architecture Patterns
+
+- **Systems as a shared instanced scene** — gameplay systems (`LevelFlowSystem`, `GrowthSystem`, `TargetSystem`, `TimerSystem`) live in `scenes/systems/Systems.tscn` and are instanced into every level scene. Never duplicate system nodes inline per level. This works because systems communicate via groups and signals, not hard node paths — only `LevelFlowSystem` requires `@export` references (to `HoleController` and `HUD`), which are set per-level in the Inspector after instancing.
+- **Scripts separate from scenes** — all `.gd` files live in `scripts/`; `.tscn` files in `scenes/`. Scenes reference scripts by path. This keeps code editable by agents without touching scene files.
+- **One scene per reusable element** — `Hole.tscn`, `HUD.tscn`, `Systems.tscn` are each their own scene, instanced into levels. Level scenes are thin containers that wire up instances via `@export` refs in the Inspector.
+
 ## Forbidden Patterns
 
 - **No Autoload singletons for gameplay systems** — use dependency injection; systems are scene-local nodes, not globals. Exception: project-wide utility autoloads (e.g. a future `AudioBus` manager) require explicit approval.

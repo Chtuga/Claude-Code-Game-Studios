@@ -34,11 +34,10 @@ dist/
 *.app
 
 # === Engine: Godot ===
-.godot/
+src/.godot/
+src/*.import
+src/export_presets.cfg
 *.translation
-export_presets.cfg
-# Uncomment if using Godot:
-# *.import
 
 # === Engine: Unity ===
 [Ll]ibrary/

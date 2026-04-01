@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://b80gqvrbqq1yk"]
+
+[ext_resource type="PackedScene" uid="uid://o2dva5e0tffy" path="res://scenes/systems/Systems.tscn" id="1_m802k"]
+[ext_resource type="PackedScene" uid="uid://d4garv8iontx4" path="res://scenes/hole/Hole.tscn" id="2_i2aat"]
+[ext_resource type="Script" uid="uid://c5o1j5tg6cnl4" path="res://scripts/ui/camera_system.gd" id="3_2djvx"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i2aat"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_2djvx"]
+
+[node name="Level01" type="Node3D" unique_id=2036887384]
+
+[node name="Systems" parent="." unique_id=1082229489 instance=ExtResource("1_m802k")]
+
+[node name="Hole" parent="." unique_id=548738485 instance=ExtResource("2_i2aat")]
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=229577959]
+script = ExtResource("3_2djvx")
+
+[node name="Evnironment" type="Node3D" parent="." unique_id=1986251075]
+
+[node name="Floor" type="StaticBody3D" parent="Evnironment" unique_id=564942000]
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Evnironment/Floor" unique_id=1327780384]
+shape = SubResource("BoxShape3D_i2aat")
+
+[node name="Boundary" type="Area3D" parent="." unique_id=1699425246]
+collision_layer = 8
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Boundary" unique_id=89209882]
+shape = SubResource("BoxShape3D_2djvx")
+
+[node name="Objects" type="Node3D" parent="." unique_id=2062582454]

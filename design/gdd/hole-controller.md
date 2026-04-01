@@ -42,7 +42,7 @@ at `HoleSpawn` position at level start.
 ```
 Hole (Node3D)                    ← root, owned by Hole Controller script
 ├── Area3D                       ← layer: hole (1), mask: consumable (2)
-│   └── SphereShape3D            ← radius driven by Growth System
+│   └── CollisionShape3D         ← shape = SphereShape3D resource (not a node)
 └── HoleMesh (MeshInstance3D)    ← visual representation; shader owned by Visual Effects System
 ```
 
