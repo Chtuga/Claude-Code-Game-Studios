@@ -2,9 +2,10 @@
 
 [ext_resource type="Script" uid="uid://ch3ugeojqqsyu" path="res://scripts/gameplay/hole_controller.gd" id="1_566bj"]
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_mqghk"]
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_566bj"]
 
-[sub_resource type="SphereMesh" id="SphereMesh_566bj"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_kg0vq"]
+cap_top = false
 
 [node name="Hole" type="Node3D" unique_id=548738485]
 script = ExtResource("1_566bj")
@@ -13,7 +14,9 @@ script = ExtResource("1_566bj")
 collision_mask = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" unique_id=1124683394]
-shape = SubResource("SphereShape3D_mqghk")
+transform = Transform3D(0.8, 0, 0, 0, 0.05, 0, 0, 0, 0.8, 0, 0, 0)
+shape = SubResource("CylinderShape3D_566bj")
 
 [node name="HoleMesh" type="MeshInstance3D" parent="." unique_id=1591780133]
-mesh = SubResource("SphereMesh_566bj")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.99, 0)
+mesh = SubResource("CylinderMesh_kg0vq")
