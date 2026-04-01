@@ -18,3 +18,7 @@ extends Resource
 
 ## Progression config for this level (usually the default shared resource).
 @export var progression_config: HoleProgressionConfig
+
+## Goal objects that must be eaten to win the level.
+## Each entry is a LevelGoal resource with object_id and required_count.
+@export var goals: Array[LevelGoal] = []

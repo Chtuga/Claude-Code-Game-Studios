@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b3fqmgd1makxu"]
+
+[ext_resource type="PackedScene" uid="uid://f0um6sn5x1rs" path="res://assets/art/objects/banana.glb" id="1_1et7h"]
+[ext_resource type="Script" uid="uid://714uiwynbjgl" path="res://scripts/core/consumable_object.gd" id="1_m041a"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1et7h"]
+size = Vector3(0.1411438, 0.21740723, 0.60980225)
+
+[node name="Banana" type="RigidBody3D" unique_id=2095848565]
+collision_layer = 2
+collision_mask = 6
+script = ExtResource("1_m041a")
+object_id = "Banana"
+points = 10
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=13921894]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0052948, 0.09942627, -0.027674198)
+shape = SubResource("BoxShape3D_1et7h")
+
+[node name="banana2" parent="." unique_id=159583150 instance=ExtResource("1_1et7h")]

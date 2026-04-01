@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://baeh0bqn7cnul"]
+
+[ext_resource type="PackedScene" uid="uid://0p62a7t1gsby" path="res://assets/art/objects/advocado-half.glb" id="1_jbqir"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3hp5k"]
+
+[node name="TestLevel" type="Node3D" unique_id=679156665]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1027262577]
+visible = false
+
+[node name="advocado-half2" parent="." unique_id=164669949 instance=ExtResource("1_jbqir")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55449086, 0.40023613, 0.23738708)
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1784400535]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=1275223506]
+shape = SubResource("CapsuleShape3D_3hp5k")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1230727425]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.2858624)

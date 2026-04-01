@@ -1,30 +1,60 @@
 [gd_scene format=3 uid="uid://b80gqvrbqq1yk"]
 
+[ext_resource type="Script" uid="uid://cw858d4gpmyp2" path="res://scripts/gameplay/level_base.gd" id="1_50wog"]
 [ext_resource type="PackedScene" uid="uid://o2dva5e0tffy" path="res://scenes/systems/Systems.tscn" id="1_m802k"]
 [ext_resource type="PackedScene" uid="uid://d4garv8iontx4" path="res://scenes/hole/Hole.tscn" id="2_i2aat"]
-[ext_resource type="Script" uid="uid://c5o1j5tg6cnl4" path="res://scripts/ui/camera_system.gd" id="3_2djvx"]
+[ext_resource type="Resource" uid="uid://skqhcko8pxxp" path="res://resources/levels/level_01_config.tres" id="3_uvc87"]
+[ext_resource type="PackedScene" uid="uid://b3fqmgd1makxu" path="res://scenes/objects/banana.tscn" id="5_qdh5e"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_i2aat"]
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_uvc87"]
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_qdh5e"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qdh5e"]
+albedo_color = Color(0.19253018, 0.37358433, 0.1403662, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_50wog"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2djvx"]
 
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_qdh5e"]
+
+[sub_resource type="Sky" id="Sky_50wog"]
+sky_material = SubResource("PanoramaSkyMaterial_qdh5e")
+
+[sub_resource type="Environment" id="Environment_qdh5e"]
+background_color = Color(0.6116237, 0.59597206, 0.39592615, 1)
+background_energy_multiplier = 1.83
+sky = SubResource("Sky_50wog")
+ambient_light_source = 2
+ambient_light_color = Color(0.5431323, 0.65360904, 0.28414723, 1)
+ambient_light_energy = 3.14
+
 [node name="Level01" type="Node3D" unique_id=2036887384]
+script = ExtResource("1_50wog")
+config = ExtResource("3_uvc87")
 
 [node name="Systems" parent="." unique_id=1082229489 instance=ExtResource("1_m802k")]
 
-[node name="Hole" parent="." unique_id=548738485 instance=ExtResource("2_i2aat")]
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=229577959]
-script = ExtResource("3_2djvx")
+[node name="Hole" parent="." unique_id=548738485 node_paths=PackedStringArray("hole_spawn") instance=ExtResource("2_i2aat")]
+hole_spawn = NodePath("../HoleSpawn")
 
 [node name="Evnironment" type="Node3D" parent="." unique_id=1986251075]
 
 [node name="Floor" type="StaticBody3D" parent="Evnironment" unique_id=564942000]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 collision_layer = 4
 collision_mask = 0
+physics_material_override = SubResource("PhysicsMaterial_uvc87")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Evnironment/Floor" unique_id=1327780384]
-shape = SubResource("BoxShape3D_i2aat")
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+shape = SubResource("WorldBoundaryShape3D_qdh5e")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Evnironment/Floor" unique_id=1749428689]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_qdh5e")
+mesh = SubResource("PlaneMesh_50wog")
 
 [node name="Boundary" type="Area3D" parent="." unique_id=1699425246]
 collision_layer = 8
@@ -34,3 +64,26 @@ collision_mask = 2
 shape = SubResource("BoxShape3D_2djvx")
 
 [node name="Objects" type="Node3D" parent="." unique_id=2062582454]
+
+[node name="Banana" parent="Objects" unique_id=2095848565 groups=["Consumables", "goal_objects"] instance=ExtResource("5_qdh5e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0924015, 0, -1.6768444)
+
+[node name="Banana2" parent="Objects" unique_id=96520987 groups=["Consumables", "goal_objects"] instance=ExtResource("5_qdh5e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.77828765, 0, -1.6768444)
+
+[node name="Banana3" parent="Objects" unique_id=646986993 groups=["Consumables", "goal_objects"] instance=ExtResource("5_qdh5e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4213295, 0, -1.6768444)
+
+[node name="HoleSpawn" type="Marker3D" parent="." unique_id=333567001]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1790069023]
+light_color = Color(1, 0.91764706, 0.3882353, 1)
+light_energy = 2.793
+light_indirect_energy = 1.713
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=507171782]
+environment = SubResource("Environment_qdh5e")
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=229577959]
+transform = Transform3D(1, 0, 0, 0, 0.34202015, 0.9396926, 0, -0.9396926, 0.34202015, 0, 2.5, 0)
+current = true
