@@ -7,6 +7,10 @@
 [sub_resource type="CylinderMesh" id="CylinderMesh_kg0vq"]
 cap_top = false
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_566bj"]
+cull_mode = 2
+albedo_color = Color(0.0018410678, 0.0018410682, 0.0018410678, 1)
+
 [node name="Hole" type="Node3D" unique_id=548738485]
 script = ExtResource("1_566bj")
 
@@ -20,3 +24,4 @@ shape = SubResource("CylinderShape3D_566bj")
 [node name="HoleMesh" type="MeshInstance3D" parent="." unique_id=1591780133]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.99, 0)
 mesh = SubResource("CylinderMesh_kg0vq")
+surface_material_override/0 = SubResource("StandardMaterial3D_566bj")

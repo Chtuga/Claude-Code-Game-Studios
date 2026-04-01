@@ -8,5 +8,5 @@ shader_type spatial;
 render_mode unshaded, cull_front, depth_draw_opaque;
 
 void fragment() {
-	ALBEDO = vec3(0.0, 0.0, 0.0);
+	ALBEDO = vec3(0.19, 0.37, 0.14);
 }

@@ -9,6 +9,7 @@ extends Node3D
 @onready var _hole_mesh: MeshInstance3D = $HoleMesh
 
 @export var max_speed: float = 5.0
+@export var floor_mesh: MeshInstance3D
 
 var config: LevelConfig = null
 var sphere_radius: float = 0.0
@@ -35,6 +36,7 @@ func start(level_config: LevelConfig) -> void:
 	_y_position = global_position.y
 
 	_apply_level_values(hole_level)
+	_update_floor_shader()
 	_active = true
 	set_process_unhandled_input(true)
 
@@ -64,6 +66,7 @@ func _apply_movement(delta: Vector2) -> void:
 	var new_pos := global_position + Vector3(capped.x, 0.0, capped.y)
 	new_pos.y = _y_position
 	global_position = _clamp_to_bounds(new_pos)
+	_update_floor_shader()
 
 
 func _clamp_to_bounds(pos: Vector3) -> Vector3:
@@ -112,6 +115,17 @@ func _swallow(body: Node3D) -> void:
 func on_hole_level_up(new_level: int) -> void:
 	hole_level = new_level
 	_apply_level_values(hole_level)
+	_update_floor_shader()
+
+
+func _update_floor_shader() -> void:
+	if floor_mesh == null:
+		return
+	var mat := floor_mesh.material_override as ShaderMaterial
+	if mat == null:
+		return
+	mat.set_shader_parameter("hole_world_position", global_position)
+	mat.set_shader_parameter("hole_radius", sphere_radius)
 
 
 func _apply_level_values(level: int) -> void:

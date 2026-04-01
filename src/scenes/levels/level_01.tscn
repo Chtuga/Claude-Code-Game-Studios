@@ -5,14 +5,19 @@
 [ext_resource type="PackedScene" uid="uid://d4garv8iontx4" path="res://scenes/hole/Hole.tscn" id="2_i2aat"]
 [ext_resource type="Resource" uid="uid://skqhcko8pxxp" path="res://resources/levels/level_01_config.tres" id="3_uvc87"]
 [ext_resource type="PackedScene" uid="uid://b3fqmgd1makxu" path="res://scenes/objects/banana.tscn" id="5_qdh5e"]
+[ext_resource type="Shader" uid="uid://dqjvahelmjdgt" path="res://shaders/floor_hole.gdshader" id="6_1ey3t"]
 [ext_resource type="PackedScene" uid="uid://bqt5sdyojrhrq" path="res://scenes/hud/HUD.tscn" id="6_50wog"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_uvc87"]
 
 [sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_qdh5e"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qdh5e"]
-albedo_color = Color(0.19253018, 0.37358433, 0.1403662, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1ey3t"]
+render_priority = 0
+shader = ExtResource("6_1ey3t")
+shader_parameter/hole_world_position = Vector3(0, 0, 0)
+shader_parameter/hole_radius = 1.0
+shader_parameter/albedo = Color(0.19, 0.37, 0.14, 1)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_50wog"]
 
@@ -39,7 +44,8 @@ config = ExtResource("3_uvc87")
 
 [node name="Systems" parent="." unique_id=1082229489 instance=ExtResource("1_m802k")]
 
-[node name="Hole" parent="." unique_id=548738485 instance=ExtResource("2_i2aat")]
+[node name="Hole" parent="." unique_id=548738485 node_paths=PackedStringArray("floor_mesh") instance=ExtResource("2_i2aat")]
+floor_mesh = NodePath("../Evnironment/Floor/MeshInstance3D")
 
 [node name="Evnironment" type="Node3D" parent="." unique_id=1986251075]
 
@@ -54,8 +60,8 @@ transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
 shape = SubResource("WorldBoundaryShape3D_qdh5e")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Evnironment/Floor" unique_id=1749428689]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
-material_override = SubResource("StandardMaterial3D_qdh5e")
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, -0.0053868056, 0)
+material_override = SubResource("ShaderMaterial_1ey3t")
 mesh = SubResource("PlaneMesh_50wog")
 
 [node name="Boundary" type="Area3D" parent="." unique_id=1699425246]
