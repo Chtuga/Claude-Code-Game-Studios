@@ -74,13 +74,13 @@ shape = SubResource("BoxShape3D_2djvx")
 [node name="Objects" type="Node3D" parent="." unique_id=2062582454]
 
 [node name="Banana" parent="Objects" unique_id=2095848565 groups=["Consumables", "goal_objects"] instance=ExtResource("5_qdh5e")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0924015, 0.37092018, -1.6768444)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0924015, 0, -1.6768444)
 
 [node name="Banana2" parent="Objects" unique_id=96520987 groups=["Consumables", "goal_objects"] instance=ExtResource("5_qdh5e")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.77828765, 0.37092018, -1.6768444)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.77828765, 0, -1.6768444)
 
 [node name="Banana3" parent="Objects" unique_id=646986993 groups=["Consumables", "goal_objects"] instance=ExtResource("5_qdh5e")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4213295, 0.37092018, -1.6768444)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4213295, 0, -1.6768444)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1790069023]
 light_color = Color(1, 0.91764706, 0.3882353, 1)

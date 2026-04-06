@@ -1,7 +1,7 @@
 shader_type spatial;
 
 uniform vec3 hole_world_position;
-uniform float hole_radius : hint_range(0.0, 10.0) = 0.5;
+uniform float hole_radius : hint_range(0.0, 1.0) = 0.5;
 uniform vec4 albedo : source_color = vec4(0.19, 0.37, 0.14, 1.0);
 
 varying vec3 v_world_pos;
